@@ -1,6 +1,7 @@
 package testplus2.game.jmx;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.rmi.registry.LocateRegistry;
 import java.util.Set;
 
@@ -14,9 +15,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
-
-import com.sun.jdmk.comm.HtmlAdaptorServer;
-
+   
 /**
  * jmx 服务实现 <br>
  * 资料参考 :
@@ -32,6 +31,7 @@ public class JmxService implements IJmxService {
 	private String host;
 	private int port;
 	private int httpPort = 9797;
+	private boolean runHttp = true;
 
 	// server
 	private MBeanServer mbeanServer;
@@ -88,28 +88,38 @@ public class JmxService implements IJmxService {
 			jmxConnectorServer.start();
 
 			// //创建适配器，用于能够通过浏览器访问MBean
-			HtmlAdaptorServer adapter = new HtmlAdaptorServer();
-			adapter.setPort(httpPort);
-			register(adapter);
-			adapter.start();
+			if (runHttp) {
+				Class<?> clz = Class
+						.forName("com.sun.jdmk.comm.HtmlAdaptorServer");
+				Object htmlAdaptorServer = clz.newInstance();
+ 				Method method = ReflectionUtils.getDeclaredMethod(clz,"setPort",int.class);
+ 				Method startMethod = ReflectionUtils.getDeclaredMethod(clz,"start");
+ 				method.invoke(htmlAdaptorServer, httpPort);
+				register(htmlAdaptorServer);
+				startMethod.invoke(htmlAdaptorServer); 
+			}
+			// HtmlAdaptorServer adapter = new HtmlAdaptorServer();
+			// adapter.setPort(httpPort);
+			// register(adapter);
+			// adapter.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
-	
+
 	@Override
 	public void asyncStart() {
-		Thread thread=	new Thread(new Runnable() {
-			
+		Thread thread = new Thread(new Runnable() {
+
 			@Override
 			public void run() {
-				start();				
+				start();
 			}
 		});
-		
+
 		thread.setDaemon(true);
-		thread.start();		
+		thread.start();
 	}
 
 	@Override
@@ -207,6 +217,12 @@ public class JmxService implements IJmxService {
 		return beanServerConnection;
 	}
 
+	public boolean isRunHttp() {
+		return runHttp;
+	}
 
+	public void setRunHttp(boolean runHttp) {
+		this.runHttp = runHttp;
+	}
 
 }
