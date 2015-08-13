@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TestPlus2
+Bundle-SymbolicName: testPlus2;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: testplus2.Activator
+Bundle-Vendor: demo
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.console;bundle-version="3.5.100",
+ org.eclipse.core.resources;bundle-version="3.8.0",
+ org.eclipse.debug.ui;bundle-version="3.8.0",
+ org.eclipse.jdt.launching;bundle-version="3.6.101"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: lib/jmxtools.jar,
+ .
